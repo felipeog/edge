@@ -1,9 +1,10 @@
 const CIRCLE_WIDTH = 8;
 const CIRCLE_RADIUS = CIRCLE_WIDTH / 2;
+const MAX_ROTATION_ANGLE = 80;
 
 const elements = {
-  twoDdRect: document.getElementById("two-d-rect"),
-  threeDdRect: document.getElementById("three-d-rect"),
+  twoDRect: document.getElementById("two-d-rect"),
+  threeDRect: document.getElementById("three-d-rect"),
   centerCursorLine: document.getElementById("center-cursor-line"),
   sliceLine: document.getElementById("slice-line"),
   centerCircle: document.getElementById("center-circle"),
@@ -27,6 +28,24 @@ document.addEventListener("mousemove", (event) => {
   state.y = event.clientY;
 });
 
+window.addEventListener("resize", () => {
+  state.width = window.innerWidth;
+  state.height = window.innerHeight;
+  state.centerX = state.width / 2;
+  state.centerY = state.height / 2;
+  updateCenterCircle();
+});
+
+window.addEventListener("load", () => {
+  updateCenterCircle();
+  requestAnimationFrame(render);
+});
+
+function updateCenterCircle() {
+  elements.centerCircle.style.left = `${state.centerX - CIRCLE_RADIUS}px`;
+  elements.centerCircle.style.top = `${state.centerY - CIRCLE_RADIUS}px`;
+}
+
 function render() {
   if (
     elements.cursorCircle.style.left !== `${state.x - CIRCLE_RADIUS}px` ||
@@ -34,9 +53,6 @@ function render() {
   ) {
     elements.cursorCircle.style.left = `${state.x - CIRCLE_RADIUS}px`;
     elements.cursorCircle.style.top = `${state.y - CIRCLE_RADIUS}px`;
-
-    elements.centerCircle.style.left = `${state.centerX - CIRCLE_RADIUS}px`;
-    elements.centerCircle.style.top = `${state.centerY - CIRCLE_RADIUS}px`;
 
     const dy = state.y - state.centerY;
     const dx = state.x - state.centerX;
@@ -70,192 +86,60 @@ function render() {
     elements.intersection2Circle.style.left = `${i2.x - CIRCLE_RADIUS}px`;
     elements.intersection2Circle.style.top = `${i2.y - CIRCLE_RADIUS}px`;
 
-    {
-      let x1, y1, x2, y2, x3, y3, x4, y4;
+    elements.twoDRect.style.clipPath = getClipPolygon(
+      i1,
+      i2,
+      state.width,
+      state.height,
+    );
+    elements.threeDRect.style.clipPath = getClipPolygon(
+      i2,
+      i1,
+      state.width,
+      state.height,
+    );
 
-      // left
-      if (i2.x === 0) {
-        x1 = i2.x;
-        y1 = i2.y;
+    const xRatio = Math.min(1, state.height / state.width);
+    const yRatio = Math.min(1, state.width / state.height);
 
-        x2 = 0;
-        y2 = 0;
+    const rotX = ((state.y / state.height) * 2 - 1) * xRatio;
+    const rotY = -1 * (((state.x / state.width) * 2 - 1) * yRatio);
 
-        x3 = state.width;
-        y3 = 0;
+    const rotAngle =
+      (centerCursorWidth / (sliceWidth / 2)) * MAX_ROTATION_ANGLE;
 
-        x4 = i1.x;
-        y4 = i1.y;
-      }
-
-      // top
-      if (i2.y === 0) {
-        x1 = i2.x;
-        y1 = i2.y;
-
-        x2 = state.width;
-        y2 = 0;
-
-        x3 = state.width;
-        y3 = state.height;
-
-        x4 = i1.x;
-        y4 = i1.y;
-      }
-
-      // right
-      if (i2.x >= state.width) {
-        x1 = i2.x;
-        y1 = i2.y;
-
-        x2 = state.width;
-        y2 = state.height;
-
-        x3 = 0;
-        y3 = state.height;
-
-        x4 = i1.x;
-        y4 = i1.y;
-      }
-
-      // bottom
-      if (i2.y >= state.height) {
-        x1 = i2.x;
-        y1 = i2.y;
-
-        x2 = 0;
-        y2 = state.height;
-
-        x3 = 0;
-        y3 = 0;
-
-        x4 = i1.x;
-        y4 = i1.y;
-      }
-
-      elements.threeDdRect.style.clipPath =
-        `polygon(` +
-        `${x1}px ${y1}px, ` +
-        `${x2}px ${y2}px, ` +
-        `${x3}px ${y3}px, ` +
-        `${x4}px ${y4}px` +
-        `)`;
-    }
-
-    {
-      let x1, y1, x2, y2, x3, y3, x4, y4;
-
-      // left
-      if (i1.x === 0) {
-        x1 = i1.x;
-        y1 = i1.y;
-
-        x2 = 0;
-        y2 = 0;
-
-        x3 = state.width;
-        y3 = 0;
-
-        x4 = i2.x;
-        y4 = i2.y;
-      }
-
-      // top
-      if (i1.y === 0) {
-        x1 = i1.x;
-        y1 = i1.y;
-
-        x2 = state.width;
-        y2 = 0;
-
-        x3 = state.width;
-        y3 = state.height;
-
-        x4 = i2.x;
-        y4 = i2.y;
-      }
-
-      // right
-      if (i1.x >= state.width) {
-        x1 = i1.x;
-        y1 = i1.y;
-
-        x2 = state.width;
-        y2 = state.height;
-
-        x3 = 0;
-        y3 = state.height;
-
-        x4 = i2.x;
-        y4 = i2.y;
-      }
-
-      // bottom
-      if (i1.y >= state.height) {
-        x1 = i1.x;
-        y1 = i1.y;
-
-        x2 = 0;
-        y2 = state.height;
-
-        x3 = 0;
-        y3 = 0;
-
-        x4 = i2.x;
-        y4 = i2.y;
-      }
-
-      elements.twoDdRect.style.clipPath =
-        `polygon(` +
-        `${x1}px ${y1}px, ` +
-        `${x2}px ${y2}px, ` +
-        `${x3}px ${y3}px, ` +
-        `${x4}px ${y4}px` +
-        `)`;
-    }
-
-    {
-      let x, y, z, a;
-
-      // left
-      if (i1.x === 0) {
-      }
-
-      // top
-      if (i1.y === 0) {
-      }
-
-      // right
-      if (i1.x >= state.width) {
-      }
-
-      // bottom
-      if (i1.y >= state.height) {
-      }
-
-      x = (i1.x / state.width) * 2 - 1;
-      y = (i1.y / state.height) * 2 - 1;
-      z = 0;
-      a = (centerCursorWidth / (sliceWidth / 2)) * 80;
-
-      elements.threeDdRect.style.transform = `rotate3d(${x}, ${y}, ${z}, ${a}deg)`;
-    }
+    elements.threeDRect.style.transform = `rotate3d(${rotX}, ${rotY}, 0, ${rotAngle}deg)`;
   }
 
   requestAnimationFrame(render);
 }
 
-window.addEventListener("resize", () => {
-  state.width = window.innerWidth;
-  state.height = window.innerHeight;
+function getClipPolygon(anchor, other, width, height) {
+  let corner1, corner2;
 
-  state.centerX = state.width / 2;
-  state.centerY = state.height / 2;
-});
+  if (anchor.x === 0) {
+    corner1 = { x: 0, y: 0 };
+    corner2 = { x: width, y: 0 };
+  } else if (anchor.y === 0) {
+    corner1 = { x: width, y: 0 };
+    corner2 = { x: width, y: height };
+  } else if (anchor.x >= width) {
+    corner1 = { x: width, y: height };
+    corner2 = { x: 0, y: height };
+  } else {
+    corner1 = { x: 0, y: height };
+    corner2 = { x: 0, y: 0 };
+  }
 
-window.addEventListener("load", () => {
-  requestAnimationFrame(render);
-});
+  return (
+    `polygon(` +
+    `${anchor.x}px ${anchor.y}px, ` +
+    `${corner1.x}px ${corner1.y}px, ` +
+    `${corner2.x}px ${corner2.y}px, ` +
+    `${other.x}px ${other.y}px` +
+    `)`
+  );
+}
 
 function lineRectIntersections(width, height, angle) {
   const cx = width / 2;
