@@ -1,0 +1,74 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  overflow: hidden;
+}
+
+#two-d-rect,
+#three-d-rect,
+#center-circle,
+#center-cursor-line,
+#slice-line,
+#cursor-circle,
+#cursor-rect,
+#intersection-1-circle,
+#intersection-2-circle {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#three-d-rect {
+  transform-style: preserve-3d;
+  transform-origin: center;
+  perspective: 1000px;
+}
+
+#two-d-rect,
+#three-d-rect {
+  width: 100dvw;
+  height: 100dvh;
+  background-image: url("https://i.postimg.cc/PrVzHpWv/edge.jpg");
+  background-size: cover;
+}
+
+#center-cursor-line {
+  height: 1px;
+  background-color: black;
+  transform-origin: top left;
+}
+
+#slice-line {
+  height: 1px;
+  background-color: black;
+}
+
+#intersection-1-circle,
+#intersection-2-circle,
+#center-circle,
+#cursor-circle {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: black;
+}
+
+#intersection-1-circle {
+  background-color: red;
+}
+
+#intersection-2-circle {
+  background-color: blue;
+}
+
+#cursor-rect {
+  width: 100dvw;
+  height: 100dvh;
+  background-color: transparent;
+}
