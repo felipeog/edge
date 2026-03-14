@@ -102,8 +102,6 @@ function render() {
     const xRatio = Math.min(1, state.height / state.width);
     const yRatio = Math.min(1, state.width / state.height);
 
-    // const rotX = ((state.y / state.height) * 2 - 1) * xRatio;
-    // const rotY = -1 * (((state.x / state.width) * 2 - 1) * yRatio);
     const rotX = ((state.y / state.height) * 2 - 1) * xRatio;
     const rotY = -1 * (((state.x / state.width) * 2 - 1) * yRatio);
 
