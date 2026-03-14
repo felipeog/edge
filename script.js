@@ -150,32 +150,28 @@ function lineRectIntersections(width, height, angle) {
 
   const points = [];
 
-  // left
   if (dx !== 0) {
-    const t = (0 - cx) / dx;
-    const y = cy + t * dy;
+    // left
+    let t = -cx / dx;
+    let y = cy + t * dy;
     if (y >= 0 && y <= height) points.push({ x: 0, y });
-  }
 
-  // right
-  if (dx !== 0) {
-    const t = (width - cx) / dx;
-    const y = cy + t * dy;
+    // right
+    t = (width - cx) / dx;
+    y = cy + t * dy;
     if (y >= 0 && y <= height) points.push({ x: width, y });
   }
 
-  // top
   if (dy !== 0) {
-    const t = (0 - cy) / dy;
-    const x = cx + t * dx;
-    if (x >= 0 && x <= width) points.push({ x, y: 0 });
-  }
+    // top — strict bounds to avoid double-counting corners
+    let t = -cy / dy;
+    let x = cx + t * dx;
+    if (x > 0 && x < width) points.push({ x, y: 0 });
 
-  // bottom
-  if (dy !== 0) {
-    const t = (height - cy) / dy;
-    const x = cx + t * dx;
-    if (x >= 0 && x <= width) points.push({ x, y: height });
+    // bottom — strict bounds to avoid double-counting corners
+    t = (height - cy) / dy;
+    x = cx + t * dx;
+    if (x > 0 && x < width) points.push({ x, y: height });
   }
 
   points.sort((a, b) => {
