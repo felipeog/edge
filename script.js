@@ -102,13 +102,15 @@ function render() {
     const xRatio = Math.min(1, state.height / state.width);
     const yRatio = Math.min(1, state.width / state.height);
 
+    // const rotX = ((state.y / state.height) * 2 - 1) * xRatio;
+    // const rotY = -1 * (((state.x / state.width) * 2 - 1) * yRatio);
     const rotX = ((state.y / state.height) * 2 - 1) * xRatio;
     const rotY = -1 * (((state.x / state.width) * 2 - 1) * yRatio);
 
     const rotAngle =
       (centerCursorWidth / (sliceWidth / 2)) * MAX_ROTATION_ANGLE;
 
-    elements.threeDRect.style.transform = `rotate3d(${rotX}, ${rotY}, 0, ${rotAngle}deg)`;
+    elements.threeDRect.style.transform = `rotate3d(${rotX}, ${rotY}, 0, ${-rotAngle}deg)`;
   }
 
   requestAnimationFrame(render);
@@ -150,28 +152,32 @@ function lineRectIntersections(width, height, angle) {
 
   const points = [];
 
+  // left
   if (dx !== 0) {
-    // left
-    let t = -cx / dx;
-    let y = cy + t * dy;
+    const t = (0 - cx) / dx;
+    const y = cy + t * dy;
     if (y >= 0 && y <= height) points.push({ x: 0, y });
+  }
 
-    // right
-    t = (width - cx) / dx;
-    y = cy + t * dy;
+  // right
+  if (dx !== 0) {
+    const t = (width - cx) / dx;
+    const y = cy + t * dy;
     if (y >= 0 && y <= height) points.push({ x: width, y });
   }
 
+  // top
   if (dy !== 0) {
-    // top — strict bounds to avoid double-counting corners
-    let t = -cy / dy;
-    let x = cx + t * dx;
-    if (x > 0 && x < width) points.push({ x, y: 0 });
+    const t = (0 - cy) / dy;
+    const x = cx + t * dx;
+    if (x >= 0 && x <= width) points.push({ x, y: 0 });
+  }
 
-    // bottom — strict bounds to avoid double-counting corners
-    t = (height - cy) / dy;
-    x = cx + t * dx;
-    if (x > 0 && x < width) points.push({ x, y: height });
+  // bottom
+  if (dy !== 0) {
+    const t = (height - cy) / dy;
+    const x = cx + t * dx;
+    if (x >= 0 && x <= width) points.push({ x, y: height });
   }
 
   points.sort((a, b) => {
